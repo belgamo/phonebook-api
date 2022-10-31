@@ -28,4 +28,8 @@ RSpec.describe PhoneNumber, :type => :model do
     subject.contact = nil
     expect(subject).to_not be_valid
   end
+
+  describe "Associations" do
+    it { should belong_to(:contact) }
+  end
 end
