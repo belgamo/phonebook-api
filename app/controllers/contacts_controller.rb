@@ -8,11 +8,11 @@ class ContactsController < ApplicationController
   def create
     contact = Contact.create!(contact_params)
 
-    render json: contact
+    render json: contact, include: [:phone_numbers]
   end
 
   def show
-    render json: @contact
+    render json: @contact, include: [:phone_numbers]
   end
 
   def update
@@ -34,6 +34,6 @@ class ContactsController < ApplicationController
   end
 
   def contact_params
-    params.require(:contact).permit(:name, :city, :email, :birthday)
+    params.require(:contact).permit(:name, :city, :email, :birthday, phone_numbers_attributes: [:number, :number_type])
   end
 end
