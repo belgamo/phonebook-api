@@ -41,6 +41,9 @@ group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
   gem 'rspec-rails', ">= 3.9.0"
   gem 'shoulda-matchers'
+  gem 'ffaker'
+  gem 'factory_bot_rails'
+  gem 'byebug'
 end
 
 group :development do
