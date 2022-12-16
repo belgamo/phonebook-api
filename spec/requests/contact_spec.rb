@@ -155,6 +155,7 @@ RSpec.describe :Contact, type: :request do
       end
 
       it 'updates register in the database' do
+        target_contact = Contact.second
         expect { update_contact }.to change { Contact.second.name }.from(target_contact.name).to("Gabriel")
       end
     end
