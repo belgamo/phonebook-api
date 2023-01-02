@@ -88,6 +88,39 @@ RSpec.describe :Contact, type: :request do
       end
     end
 
+    context 'with valid phone_numbers' do
+      let!(:phone_number_params) do
+        { phone_numbers_attributes: [attributes_for(:phone_number), attributes_for(:phone_number)] }
+      end
+      
+      let(:contact_params) do
+        attributes_for(:contact).merge(phone_number_params)
+      end
+
+      it 'returns 200 as http response' do
+        create_contact
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the correct body' do 
+        create_contact
+
+        contact = parse_json
+
+        base_array = phone_number_params[:phone_numbers_attributes]
+        target_array = contact[:phone_numbers]
+
+        phone_number_params[:phone_numbers_attributes].each do | item |
+          expect(contact[:phone_numbers]).to include(a_hash_including(item))
+        end
+      end
+
+      it 'persists register in the database' do
+        expect { create_contact }.to change { PhoneNumber.count }.from(0).to(2)
+      end
+    end
+
     context 'with invalid data' do
       let(:contact_params) do
         attributes_for(:contact, name: "")
