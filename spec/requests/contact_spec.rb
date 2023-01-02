@@ -9,21 +9,14 @@ end
 
 RSpec.describe :Contact, type: :request do
   describe 'GET /index' do
-    subject(:fetch_contacts) do
-      get contacts_path, headers: headers
-    end
-
     let!(:contacts_list) { create_list(:contact, 2) }
+    before { get contacts_path, headers: headers }
     
     it 'returns 200 as http response' do
-      fetch_contacts
-
       expect(response).to have_http_status(:ok)
     end
 
     it 'returns the correct body' do
-      fetch_contacts
-
       parsed_contacts = parse_json
 
       expect(parsed_contacts.size).to eq(2)
@@ -35,22 +28,16 @@ RSpec.describe :Contact, type: :request do
   end
 
   describe 'GET /show' do
-    subject(:fetch_contact) do
-      get contact_path(target_contact)
-    end
+    before { get contact_path(target_contact) }
 
     context 'when the contact exists' do
       let(:target_contact) { create(:contact) }
 
-      it 'returns 200 as http response' do
-        fetch_contact
-        
+      it 'returns 200 as http response' do        
         expect(response).to have_http_status(:ok)
       end
 
-      it 'returns the correct body' do
-        fetch_contact
-        
+      it 'returns the correct body' do        
         contact = parse_json
 
         check_attributes(contact, target_contact)
@@ -62,14 +49,10 @@ RSpec.describe :Contact, type: :request do
       let(:target_contact) { 'inexistent' }
 
       it 'returns 404 as http response' do
-        fetch_contact
-
         expect(response).to have_http_status(:not_found)
       end
 
       it 'returns error message in the body' do
-        fetch_contact
-
         expect(parse_json[:message]).to eq("Couldn't find Contact with 'id'=inexistent")
       end
     end
