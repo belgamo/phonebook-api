@@ -7,6 +7,18 @@ def check_attributes(parsed_contact, target_contact)
   expect(parsed_contact[:birthday]).to eq(target_contact[:birthday])
 end
 
+# check if key & values from the objects of base array
+# match they key & values from the objects of the target array.
+# this method considers that both base and target arrays are in the same order.
+def compare_array_of_objects(base_array, target_array)
+  base_array.each_with_index do | item, index |
+    target = target_array[index]
+    item.each do | key, value |
+      expect(target[key]).to eq(value)
+    end
+  end
+end
+
 RSpec.describe :Contact, type: :request do
   describe 'GET /index' do
     let!(:contacts_list) { create_list(:contact, 2) }
@@ -85,6 +97,37 @@ RSpec.describe :Contact, type: :request do
 
       it 'persists register in the database' do
         expect { create_contact }.to change { Contact.count }.from(0).to(1)
+      end
+    end
+
+    context 'with valid phone_numbers' do
+      let!(:phone_number_params) do
+        { phone_numbers_attributes: [attributes_for(:phone_number), attributes_for(:phone_number)] }
+      end
+      
+      let(:contact_params) do
+        attributes_for(:contact).merge(phone_number_params)
+      end
+
+      it 'returns 200 as http response' do
+        create_contact
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the correct body' do 
+        create_contact
+
+        contact = parse_json
+
+        base_array = phone_number_params[:phone_numbers_attributes]
+        target_array = contact[:phone_numbers]
+
+        compare_array_of_objects(base_array, target_array)
+      end
+
+      it 'persists register in the database' do
+        expect { create_contact }.to change { PhoneNumber.count }.from(0).to(2)
       end
     end
 
